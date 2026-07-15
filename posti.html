@@ -143,9 +143,11 @@
   function newGuest(){ return { name: '', categoria: 'adulto', note: '' }; }
   function newTable(){
     var n = state.tables.length + 1;
-    return { label: 'Tavolo ' + n, menu: null, cat: null, imperiale: false, guests: [newGuest()] };
+    return { label: 'Tavolo ' + n, menu: null, cat: null, imperiale: false, onore: false, guests: [newGuest()] };
   }
   function maxPosti(t){ return t.imperiale ? MAX_IMPERIALE : MAX_TAVOLO; }
+  // Tavolo sposi/festeggiati: bottone dedicato o nome che lo dice gia' da solo
+  function isOnore(t){ return Boolean(t.onore) || /spos|festeggiat/i.test(t.label||''); }
   function catEffettiva(t, g){ return t.cat || g.categoria; }
   function validGuests(t){
     return t.guests.filter(function(g){ return g.name && g.name.trim().length >= 2; });
@@ -221,7 +223,7 @@
       });
       card.appendChild(tipoSeg);
 
-      if(meta.menuTipologie || meta.tavoloImperiale){
+      {
         var seg = document.createElement('div');
         seg.className = 'menu-seg';
         if(meta.menuTipologie){
@@ -248,6 +250,14 @@
           });
           seg.appendChild(impBtn);
         }
+        var onoreBtn = document.createElement('button');
+        onoreBtn.textContent = '💍 Sposi/festeggiati';
+        if(t.onore) onoreBtn.className='on';
+        onoreBtn.addEventListener('click', function(){
+          if(locked) return;
+          t.onore = !t.onore; touched(); render();
+        });
+        seg.appendChild(onoreBtn);
         card.appendChild(seg);
       }
 
@@ -348,8 +358,8 @@
       var n = validGuests(t).length;
       var lbl = (t.label||'').trim() || ('Tavolo ' + (i+1));
       if(n === 0){ window.alert('Il tavolo "' + lbl + '" è vuoto: aggiungi le persone o eliminalo.'); return; }
-      if(n < MIN_TAVOLO){
-        window.alert('Il tavolo "' + lbl + '" ha solo ' + n + (n===1?' persona':' persone') + ': i tavoli devono avere almeno ' + MIN_TAVOLO + ' posti. Unisci gli ospiti a un altro tavolo, oppure scrivici su WhatsApp per esigenze particolari.');
+      if(n < MIN_TAVOLO && !isOnore(t)){
+        window.alert('Il tavolo "' + lbl + '" ha solo ' + n + (n===1?' persona':' persone') + ': i tavoli devono avere almeno ' + MIN_TAVOLO + ' posti (solo il tavolo 💍 sposi/festeggiati può essere più piccolo). Unisci gli ospiti a un altro tavolo, oppure scrivici su WhatsApp per esigenze particolari.');
         return;
       }
       if(n > maxPosti(t)){
@@ -404,7 +414,7 @@
     meta.tavoloImperiale = Boolean(b.tavoloImperiale);
     meta.stato = b.stato;
     meta.submittedAt = b.submittedAt;
-    el('bannerIntro').innerHTML += ' Ogni tavolo può ospitare <b>da ' + MIN_TAVOLO + ' a ' + MAX_TAVOLO + ' persone</b>' + (meta.tavoloImperiale ? '; il tavolo 👑 imperiale non ha questo limite' : '') + '.';
+    el('bannerIntro').innerHTML += ' Ogni tavolo può ospitare <b>da ' + MIN_TAVOLO + ' a ' + MAX_TAVOLO + ' persone</b>' + (meta.tavoloImperiale ? '; il tavolo 👑 imperiale non ha questo limite' : '') + '; il tavolo 💍 sposi/festeggiati può essere anche più piccolo.';
     var draft = b.draft && Array.isArray(b.draft.tables) ? b.draft : { tables: [] };
     state.tables = draft.tables;
     if(state.tables.length === 0 && b.stato === 'attivo') state.tables.push(newTable());
