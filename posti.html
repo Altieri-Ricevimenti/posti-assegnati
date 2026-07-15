@@ -114,8 +114,10 @@
   var API = 'https://qjigyokmnpuwtdrjuwqb.supabase.co/functions/v1/posti-assegnati';
   var TOKEN = new URLSearchParams(window.location.search).get('c') || '';
   var state = { tables: [] };
-  var meta = { menuTipologie: false, stato: 'attivo', submittedAt: null };
+  var meta = { menuTipologie: false, tavoloImperiale: false, stato: 'attivo', submittedAt: null };
   var saveTimer = null;
+  // Regole del ristorante: tavoli da 7 a 10 persone; tavolo imperiale fino a 60.
+  var MIN_TAVOLO = 7, MAX_TAVOLO = 10, MAX_IMPERIALE = 60;
 
   function el(id){ return document.getElementById(id); }
 
@@ -141,7 +143,12 @@
   function newGuest(){ return { name: '', categoria: 'adulto', note: '' }; }
   function newTable(){
     var n = state.tables.length + 1;
-    return { label: 'Tavolo ' + n, menu: null, guests: [newGuest()] };
+    return { label: 'Tavolo ' + n, menu: null, cat: null, imperiale: false, guests: [newGuest()] };
+  }
+  function maxPosti(t){ return t.imperiale ? MAX_IMPERIALE : MAX_TAVOLO; }
+  function catEffettiva(t, g){ return t.cat || g.categoria; }
+  function validGuests(t){
+    return t.guests.filter(function(g){ return g.name && g.name.trim().length >= 2; });
   }
 
   function counts(){
@@ -149,7 +156,8 @@
     state.tables.forEach(function(t){ t.guests.forEach(function(g){
       if(!g.name || g.name.trim().length<2) return;
       tot++;
-      if(g.categoria==='ragazzo') r++; else if(g.categoria==='baby') b++; else a++;
+      var cat = catEffettiva(t, g);
+      if(cat==='ragazzo') r++; else if(cat==='baby') b++; else a++;
       if(g.note && g.note.trim()) al++;
     });});
     return {adulti:a, ragazzi:r, baby:b, allergie:al, tot:tot};
@@ -195,21 +203,51 @@
       }
       card.appendChild(head);
 
-      if(meta.menuTipologie){
+      // Tipologia dell'intero tavolo: se scelta vale per tutti i seduti,
+      // "Misto" = si indica persona per persona.
+      var tipoSeg = document.createElement('div');
+      tipoSeg.className = 'menu-seg';
+      var tipoLbl = document.createElement('span'); tipoLbl.textContent = 'Tavolo di:';
+      tipoSeg.appendChild(tipoLbl);
+      [[null,'Misto'],['adulto','Adulti'],['ragazzo','Ragazzi'],['baby','Baby']].forEach(function(pair){
+        var btn = document.createElement('button');
+        btn.textContent = pair[1];
+        if(t.cat===pair[0] || (!t.cat && pair[0]===null)) btn.className='on';
+        btn.addEventListener('click', function(){
+          if(locked) return;
+          t.cat = pair[0]; touched(); render();
+        });
+        tipoSeg.appendChild(btn);
+      });
+      card.appendChild(tipoSeg);
+
+      if(meta.menuTipologie || meta.tavoloImperiale){
         var seg = document.createElement('div');
         seg.className = 'menu-seg';
-        var segLbl = document.createElement('span'); segLbl.textContent = 'Menu:';
-        seg.appendChild(segLbl);
-        ['adulti','ragazzi'].forEach(function(m){
-          var btn = document.createElement('button');
-          btn.textContent = m==='adulti' ? 'Menu adulti' : 'Menu ragazzi';
-          if(t.menu===m) btn.className='on';
-          btn.addEventListener('click', function(){
-            if(locked) return;
-            t.menu = (t.menu===m) ? null : m; touched(); render();
+        if(meta.menuTipologie){
+          var segLbl = document.createElement('span'); segLbl.textContent = 'Menu:';
+          seg.appendChild(segLbl);
+          ['adulti','ragazzi'].forEach(function(m){
+            var btn = document.createElement('button');
+            btn.textContent = m==='adulti' ? 'Menu adulti' : 'Menu ragazzi';
+            if(t.menu===m) btn.className='on';
+            btn.addEventListener('click', function(){
+              if(locked) return;
+              t.menu = (t.menu===m) ? null : m; touched(); render();
+            });
+            seg.appendChild(btn);
           });
-          seg.appendChild(btn);
-        });
+        }
+        if(meta.tavoloImperiale){
+          var impBtn = document.createElement('button');
+          impBtn.textContent = '👑 Imperiale';
+          if(t.imperiale) impBtn.className='on';
+          impBtn.addEventListener('click', function(){
+            if(locked) return;
+            t.imperiale = !t.imperiale; touched(); render();
+          });
+          seg.appendChild(impBtn);
+        }
         card.appendChild(seg);
       }
 
@@ -228,15 +266,18 @@
         }
         var row2 = document.createElement('div');
         row2.className = 'grow2';
-        var cat = document.createElement('div'); cat.className='cat-seg';
-        [['adulto','Adulto'],['ragazzo','Ragazzo'],['baby','Baby']].forEach(function(pair){
-          var b = document.createElement('button');
-          b.textContent = pair[1];
-          if(g.categoria===pair[0]) b.className='on';
-          b.addEventListener('click', function(){ if(locked) return; g.categoria=pair[0]; touched(); render(); });
-          cat.appendChild(b);
-        });
-        row2.appendChild(cat);
+        if(!t.cat){
+          // Tavolo misto: categoria scelta persona per persona
+          var cat = document.createElement('div'); cat.className='cat-seg';
+          [['adulto','Adulto'],['ragazzo','Ragazzo'],['baby','Baby']].forEach(function(pair){
+            var b = document.createElement('button');
+            b.textContent = pair[1];
+            if(g.categoria===pair[0]) b.className='on';
+            b.addEventListener('click', function(){ if(locked) return; g.categoria=pair[0]; touched(); render(); });
+            cat.appendChild(b);
+          });
+          row2.appendChild(cat);
+        }
         var note = document.createElement('input');
         note.className='gnote'; note.value = g.note || ''; note.placeholder = 'Allergie o intolleranze (se presenti)'; note.maxLength = 200;
         note.addEventListener('input', function(){ g.note = note.value; touched(); renderTotali(); });
@@ -247,8 +288,16 @@
 
       if(!locked){
         var add = document.createElement('button');
-        add.className='addguest'; add.textContent = '+ Aggiungi persona';
-        add.addEventListener('click', function(){ t.guests.push(newGuest()); touched(); render();
+        add.className='addguest';
+        add.textContent = '+ Aggiungi persona (' + t.guests.length + '/' + maxPosti(t) + ')';
+        add.addEventListener('click', function(){
+          if(t.guests.length >= maxPosti(t)){
+            window.alert(t.imperiale
+              ? 'Il tavolo imperiale può ospitare al massimo ' + MAX_IMPERIALE + ' persone.'
+              : 'I tavoli possono avere al massimo ' + MAX_TAVOLO + ' posti: crea un altro tavolo' + (meta.tavoloImperiale ? ' oppure marca questo come 👑 Imperiale.' : '.'));
+            return;
+          }
+          t.guests.push(newGuest()); touched(); render();
           var inputs = card.querySelectorAll('input.gname');
           var last = inputs[inputs.length-1]; if(last) last.focus();
         });
@@ -293,6 +342,23 @@
   el('submitBtn').addEventListener('click', function(){
     var c = counts();
     if(c.tot === 0){ window.alert('Aggiungi almeno un tavolo con le persone sedute prima di inviare.'); return; }
+    // Regole sui posti: 7-10 per tavolo, imperiale fino a 60
+    for(var i=0;i<state.tables.length;i++){
+      var t = state.tables[i];
+      var n = validGuests(t).length;
+      var lbl = (t.label||'').trim() || ('Tavolo ' + (i+1));
+      if(n === 0){ window.alert('Il tavolo "' + lbl + '" è vuoto: aggiungi le persone o eliminalo.'); return; }
+      if(n < MIN_TAVOLO){
+        window.alert('Il tavolo "' + lbl + '" ha solo ' + n + (n===1?' persona':' persone') + ': i tavoli devono avere almeno ' + MIN_TAVOLO + ' posti. Unisci gli ospiti a un altro tavolo, oppure scrivici su WhatsApp per esigenze particolari.');
+        return;
+      }
+      if(n > maxPosti(t)){
+        window.alert(t.imperiale
+          ? 'Il tavolo imperiale "' + lbl + '" ha ' + n + ' persone: il massimo è ' + MAX_IMPERIALE + '.'
+          : 'Il tavolo "' + lbl + '" ha ' + n + ' persone: i tavoli possono avere al massimo ' + MAX_TAVOLO + ' posti. Dividi gli ospiti su più tavoli.');
+        return;
+      }
+    }
     var det = [];
     if(c.adulti) det.push(c.adulti + ' adulti');
     if(c.ragazzi) det.push(c.ragazzi + ' ragazzi');
@@ -335,8 +401,10 @@
       'Richiesta modifica per "' + b.evento.title + '" del ' + b.evento.dateLabel + ':\n'
     );
     meta.menuTipologie = Boolean(b.menuTipologie);
+    meta.tavoloImperiale = Boolean(b.tavoloImperiale);
     meta.stato = b.stato;
     meta.submittedAt = b.submittedAt;
+    el('bannerIntro').innerHTML += ' Ogni tavolo può ospitare <b>da ' + MIN_TAVOLO + ' a ' + MAX_TAVOLO + ' persone</b>' + (meta.tavoloImperiale ? '; il tavolo 👑 imperiale non ha questo limite' : '') + '.';
     var draft = b.draft && Array.isArray(b.draft.tables) ? b.draft : { tables: [] };
     state.tables = draft.tables;
     if(state.tables.length === 0 && b.stato === 'attivo') state.tables.push(newTable());
