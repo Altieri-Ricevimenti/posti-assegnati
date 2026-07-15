@@ -2,9 +2,9 @@
 <html lang="it"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="robots" content="noindex">
-<title>Posti assegnati · Altieri Ricevimenti</title>
-<meta property="og:title" content="Posti assegnati · Altieri Ricevimenti">
-<meta property="og:description" content="Compila i tavoli e gli ospiti del tuo evento: bastano pochi minuti.">
+<title>Il tuo evento · Altieri Ricevimenti</title>
+<meta property="og:title" content="Il tuo evento · Altieri Ricevimenti">
+<meta property="og:description" content="Il conto alla rovescia, i dettagli e i posti assegnati del tuo evento.">
 <meta property="og:image" content="https://neokmusic.github.io/posti-assegnati/logo-mark.png">
 <link rel="icon" type="image/png" href="logo-mark.png">
 <style>
@@ -22,43 +22,41 @@
   }
   *{box-sizing:border-box}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);margin:0;color:var(--ink);-webkit-font-smoothing:antialiased}
-  .wrap{max-width:640px;margin:0 auto;padding:16px 16px 150px}
+  .wrap{max-width:640px;margin:0 auto;padding:16px 16px 60px}
   header{padding:30px 4px 10px;text-align:center}
   .brandlogo{width:170px;max-width:60%;display:block;margin:0 auto 20px}
   .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:700}
   h1{font-family:'Proyale',Georgia,serif;font-size:30px;font-weight:400;margin:10px 0 4px;line-height:1.2;letter-spacing:.01em}
   .date{color:var(--muted);font-size:15px}
   .headrule{width:44px;height:2px;background:var(--gold-soft);margin:18px auto 4px;border-radius:2px}
-  .banner{border-radius:14px;padding:13px 15px;font-size:14px;line-height:1.5;margin:16px 0}
-  .banner.info{background:var(--surface);color:var(--ink-2)}
-  .banner.ok{background:#EBF2ED;color:#22513A}
-  .banner.locked{background:#FAECEC;color:#84302B}
-  .table-card{background:var(--card);border:1px solid var(--line-light);border-radius:18px;padding:16px;margin:14px 0;box-shadow:0 2px 12px rgba(0,0,0,.06)}
-  .table-head{display:flex;gap:8px;align-items:center;margin-bottom:8px}
-  .table-head input{flex:1;font-family:'Proyale',Georgia,serif;font-size:19px;border:none;background:transparent;color:var(--ink);padding:8px 6px;border-bottom:1.5px solid var(--line);outline:none;min-width:0}
-  .table-head input:focus{border-bottom-color:var(--ink)}
-  .menu-seg{display:flex;gap:6px;margin:6px 0 10px}
-  .menu-seg span{font-size:12px;color:var(--muted);align-self:center;margin-right:2px}
-  .menu-seg button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:13px;color:var(--muted);font-weight:600}
-  .menu-seg button.on{background:var(--ink);border-color:var(--ink);color:#fff}
-  .guest{display:grid;grid-template-columns:1fr auto;gap:6px;padding:10px 0;border-top:1px solid var(--line-light)}
-  .guest input.gname{grid-column:1;border:none;background:transparent;font-size:16px;padding:4px 6px;outline:none;color:var(--ink);min-width:0}
-  .guest .gdel{grid-column:2;border:none;background:none;color:#BDBDBD;font-size:20px;padding:0 6px}
-  .grow2{grid-column:1 / span 2;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-  .cat-seg{display:flex;gap:4px}
-  .cat-seg button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 11px;font-size:12px;color:var(--muted);font-weight:600}
-  .cat-seg button.on{background:var(--ink);border-color:var(--ink);color:#fff}
-  input.gnote{flex:1;border:1px solid var(--line-light);border-radius:999px;background:var(--surface);font-size:13px;padding:7px 12px;outline:none;color:var(--ink);min-width:140px}
-  input.gnote:focus{border-color:var(--ink);background:#fff}
-  .addguest{width:100%;margin-top:8px;border:1.5px dashed var(--line);background:none;border-radius:12px;padding:10px;font-size:14px;color:var(--ink);font-weight:600}
-  .deltable{border:none;background:none;color:var(--danger);font-size:13px;font-weight:600;padding:6px}
-  .addtable{width:100%;border:1.5px dashed var(--line);background:none;border-radius:18px;padding:16px;font-size:16px;color:var(--ink);font-weight:700;margin:6px 0}
-  .totali{background:var(--surface);border-radius:14px;padding:13px 15px;font-size:14px;color:var(--ink-2);margin:16px 0;line-height:1.55}
-  footer{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(to top,var(--bg) 75%,transparent);padding:12px 16px calc(14px + env(safe-area-inset-bottom))}
-  .footer-inner{max-width:640px;margin:0 auto}
-  .savestate{text-align:center;font-size:12px;color:var(--muted);margin-bottom:6px;min-height:15px}
-  .submit{width:100%;border:none;background:var(--ink);color:#fff;font-size:16px;font-weight:700;border-radius:16px;padding:17px;box-shadow:0 6px 18px rgba(0,0,0,.22);letter-spacing:.02em}
-  .submit:disabled{opacity:.55}
+  .card{background:var(--card);border:1px solid var(--line-light);border-radius:18px;padding:18px;margin:14px 0;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+  .count-card{text-align:center;padding:26px 18px}
+  .count-num{font-family:'Proyale',Georgia,serif;font-size:64px;line-height:1;color:var(--ink)}
+  .count-label{font-size:14px;color:var(--muted);margin-top:8px;letter-spacing:.04em}
+  .count-today{font-family:'Proyale',Georgia,serif;font-size:34px;line-height:1.2}
+  .sect{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:24px 4px 2px}
+  .step{display:flex;gap:14px;position:relative;padding:0 0 22px 0}
+  .step:last-child{padding-bottom:0}
+  .step .rail{width:22px;display:flex;flex-direction:column;align-items:center}
+  .step .dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff}
+  .step.done .dot{background:var(--ink);border-color:var(--ink)}
+  .step.now .dot{border-color:var(--gold);background:#fff}
+  .step.now .dot::after{content:'';width:8px;height:8px;border-radius:50%;background:var(--gold)}
+  .step .bar{width:2px;flex:1;background:var(--line-light);margin-top:4px}
+  .step.done .bar{background:var(--ink)}
+  .step .txt{flex:1;padding-top:1px}
+  .step .t1{font-size:15px;font-weight:600;color:var(--ink)}
+  .step:not(.done):not(.now) .t1{color:var(--muted);font-weight:500}
+  .step .t2{font-size:13px;color:var(--muted);margin-top:2px;line-height:1.45}
+  .info-title{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:6px}
+  .info-body{font-size:15px;line-height:1.5;color:var(--ink-2);white-space:pre-line}
+  .ospiti-num{font-family:'Proyale',Georgia,serif;font-size:38px;line-height:1}
+  .ospiti-det{font-size:14px;color:var(--muted);margin-top:6px}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:none;border-radius:16px;padding:17px;font-size:16px;font-weight:700;text-decoration:none;letter-spacing:.02em;margin-top:12px}
+  .btn.primary{background:var(--ink);color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.22)}
+  .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+  .btn .arrow{font-weight:400}
+  .pagefoot{text-align:center;color:var(--muted);font-size:12px;margin-top:30px;line-height:1.6}
   button{cursor:pointer;font-family:inherit}
   .hidden{display:none!important}
   #loading{text-align:center;padding:80px 20px;color:var(--muted)}
@@ -66,12 +64,13 @@
   .errcard img{width:150px;margin-bottom:22px}
   .errcard h2{font-family:'Proyale',Georgia,serif;font-size:20px;font-weight:400;margin:0 0 10px}
   .errcard p{color:var(--muted);line-height:1.55;margin:0;font-size:14px}
-  .ro .guest input,.ro .table-head input,.ro input.gnote{pointer-events:none}
-  dialog{border:none;border-radius:20px;padding:22px;max-width:340px;width:88%;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+  dialog{border:none;border-radius:20px;padding:22px;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.25)}
   dialog::backdrop{background:rgba(10,10,10,.45)}
   dialog h2{font-family:'Proyale',Georgia,serif;font-weight:400;margin:0 0 8px;font-size:19px}
-  dialog p{margin:0 0 16px;color:var(--muted);font-size:14px;line-height:1.5}
-  .dlg-row{display:flex;gap:8px}
+  dialog p{margin:0 0 12px;color:var(--muted);font-size:14px;line-height:1.5}
+  dialog textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px;font-family:inherit;font-size:15px;color:var(--ink);outline:none;resize:vertical}
+  dialog textarea:focus{border-color:var(--ink);background:#fff}
+  .dlg-row{display:flex;gap:8px;margin-top:14px}
   .dlg-row button{flex:1;border-radius:12px;padding:12px;font-size:15px;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
   .dlg-row button.primary{background:var(--ink);border-color:var(--ink);color:#fff}
 </style></head><body>
@@ -80,52 +79,59 @@
   <div id="app" class="hidden">
     <header>
       <img class="brandlogo" src="A-VUOTO-TRANSPARENT-CROPPED.png" alt="Altieri Ricevimenti">
-      <div class="eyebrow">Posti assegnati</div>
+      <div class="eyebrow">Il tuo evento</div>
       <h1 id="evTitle"></h1>
       <div class="date" id="evDate"></div>
       <div class="headrule"></div>
     </header>
-    <div id="bannerLocked" class="banner locked hidden">🔒 La lista è stata confermata dal ristorante e non è più modificabile. Per variazioni scrivici su WhatsApp.</div>
-    <div id="bannerSent" class="banner ok hidden"></div>
-    <div id="bannerIntro" class="banner info">Crea i tavoli e scrivi chi siede in ognuno. Se qualcuno ha allergie o intolleranze, indicale accanto al nome. Puoi salvare e riprendere quando vuoi: alla fine premi <b>Invia al ristorante</b>.</div>
-    <div id="tables"></div>
-    <button id="addTable" class="addtable">+ Aggiungi tavolo</button>
-    <div class="totali" id="totali"></div>
+
+    <div class="card count-card" id="countCard"></div>
+
+    <div class="sect">Stato dell'evento</div>
+    <div class="card" id="trackerCard"></div>
+
+    <div class="sect">I dettagli</div>
+    <div class="card hidden" id="temaCard">
+      <div class="info-title">Tema</div>
+      <div class="info-body" id="temaBody"></div>
+    </div>
+    <div class="card hidden" id="alleCard">
+      <div class="info-title">Allestimento</div>
+      <div class="info-body" id="alleBody"></div>
+    </div>
+    <div class="card" id="ospitiCard">
+      <div class="info-title">Ospiti</div>
+      <div id="ospitiBody"></div>
+    </div>
+
+    <a class="btn primary" id="postiBtn" href="#"><span id="postiBtnTxt"></span> <span class="arrow">→</span></a>
+    <button class="btn ghost" id="reqBtn">Richiedi una modifica</button>
+
+    <div class="pagefoot">Altieri Ricevimenti<br>Questa pagina si aggiorna da sola a ogni novità sul tuo evento.</div>
   </div>
 </div>
-<footer id="footer" class="hidden">
-  <div class="footer-inner">
-    <div class="savestate" id="saveState"></div>
-    <button class="submit" id="submitBtn">Invia al ristorante</button>
-  </div>
-</footer>
-<dialog id="confirmDlg">
-  <h2>Inviare la lista?</h2>
-  <p id="confirmTxt"></p>
+<dialog id="reqDlg">
+  <h2>Richiedi una modifica</h2>
+  <p>Scrivici cosa vorresti cambiare o aggiungere: la richiesta arriva subito al ristorante e ti risponderemo su WhatsApp.</p>
+  <textarea id="reqText" maxlength="600" placeholder="Es. Vorremmo aggiungere il tavolo dei colleghi, 6 persone…"></textarea>
   <div class="dlg-row">
-    <button id="dlgNo">Ricontrollo</button>
-    <button id="dlgYes" class="primary">Invia</button>
+    <button id="reqNo">Annulla</button>
+    <button id="reqYes" class="primary">Invia richiesta</button>
   </div>
 </dialog>
 <script>
 (function(){
   var API = 'https://qjigyokmnpuwtdrjuwqb.supabase.co/functions/v1/posti-assegnati';
   var TOKEN = new URLSearchParams(window.location.search).get('c') || '';
-  var state = { tables: [] };
-  var meta = { menuTipologie: false, stato: 'attivo', submittedAt: null };
-  var saveTimer = null;
 
   function el(id){ return document.getElementById(id); }
-
   function showError(msg){
     document.body.innerHTML = '<div class="errcard"><img src="A-VUOTO-TRANSPARENT-CROPPED.png" alt="Altieri Ricevimenti"><h2>Ops…</h2><p>' + msg + '</p></div>';
   }
-
   if(!TOKEN){
     showError('Link non valido. Controlla di aver aperto il link completo ricevuto dal ristorante.');
     return;
   }
-
   function api(action, extra){
     var payload = { action: action, token: TOKEN };
     if (extra) for (var k in extra) payload[k] = extra[k];
@@ -133,187 +139,81 @@
       .then(function(r){ return r.json().then(function(j){ return { ok: r.ok, status: r.status, body: j }; }); });
   }
 
-  function newGuest(){ return { name: '', categoria: 'adulto', note: '' }; }
-  function newTable(){
-    var n = state.tables.length + 1;
-    return { label: 'Tavolo ' + n, menu: null, guests: [newGuest()] };
-  }
-
-  function counts(){
-    var a=0,r=0,b=0,al=0,tot=0;
-    state.tables.forEach(function(t){ t.guests.forEach(function(g){
-      if(!g.name || g.name.trim().length<2) return;
-      tot++;
-      if(g.categoria==='ragazzo') r++; else if(g.categoria==='baby') b++; else a++;
-      if(g.note && g.note.trim()) al++;
-    });});
-    return {adulti:a, ragazzi:r, baby:b, allergie:al, tot:tot};
-  }
-
-  function renderTotali(){
-    var c = counts();
-    var parts = [];
-    parts.push('<b>' + c.tot + '</b> ospiti su <b>' + state.tables.length + '</b> tavoli');
-    var det = [];
-    if(c.adulti) det.push(c.adulti + ' adulti');
-    if(c.ragazzi) det.push(c.ragazzi + ' ragazzi');
-    if(c.baby) det.push(c.baby + ' baby');
-    if(det.length) parts.push(det.join(' · '));
-    parts.push(c.allergie ? ('⚠️ ' + c.allergie + (c.allergie===1?' persona con allergie/intolleranze':' persone con allergie/intolleranze')) : 'Nessuna allergia indicata');
-    el('totali').innerHTML = parts.join('<br>');
-  }
-
-  function render(){
-    var locked = meta.stato !== 'attivo';
-    var root = el('tables');
-    root.innerHTML = '';
-    root.className = locked ? 'ro' : '';
-    state.tables.forEach(function(t, ti){
-      var card = document.createElement('div');
-      card.className = 'table-card';
-
-      var head = document.createElement('div');
-      head.className = 'table-head';
-      var lbl = document.createElement('input');
-      lbl.value = t.label; lbl.placeholder = 'Nome tavolo (es. Tavolo 1, Tavolo Sposi)';
-      lbl.maxLength = 80;
-      lbl.addEventListener('input', function(){ t.label = lbl.value; touched(); });
-      head.appendChild(lbl);
-      if(!locked){
-        var delT = document.createElement('button');
-        delT.className = 'deltable'; delT.textContent = 'Elimina';
-        delT.addEventListener('click', function(){
-          if(t.guests.some(function(g){return g.name.trim();}) && !window.confirm('Eliminare "' + (t.label||'questo tavolo') + '" e le persone inserite?')) return;
-          state.tables.splice(ti,1); touched(); render();
-        });
-        head.appendChild(delT);
-      }
-      card.appendChild(head);
-
-      if(meta.menuTipologie){
-        var seg = document.createElement('div');
-        seg.className = 'menu-seg';
-        var segLbl = document.createElement('span'); segLbl.textContent = 'Menu:';
-        seg.appendChild(segLbl);
-        ['adulti','ragazzi'].forEach(function(m){
-          var btn = document.createElement('button');
-          btn.textContent = m==='adulti' ? 'Menu adulti' : 'Menu ragazzi';
-          if(t.menu===m) btn.className='on';
-          btn.addEventListener('click', function(){
-            if(locked) return;
-            t.menu = (t.menu===m) ? null : m; touched(); render();
-          });
-          seg.appendChild(btn);
-        });
-        card.appendChild(seg);
-      }
-
-      t.guests.forEach(function(g, gi){
-        var row = document.createElement('div');
-        row.className = 'guest';
-        var name = document.createElement('input');
-        name.className='gname'; name.value = g.name; name.placeholder = 'Nome e cognome'; name.maxLength = 120;
-        name.addEventListener('input', function(){ g.name = name.value; touched(); renderTotali(); });
-        row.appendChild(name);
-        if(!locked){
-          var del = document.createElement('button');
-          del.className='gdel'; del.innerHTML='&times;';
-          del.addEventListener('click', function(){ t.guests.splice(gi,1); touched(); render(); });
-          row.appendChild(del);
-        }
-        var row2 = document.createElement('div');
-        row2.className = 'grow2';
-        var cat = document.createElement('div'); cat.className='cat-seg';
-        [['adulto','Adulto'],['ragazzo','Ragazzo'],['baby','Baby']].forEach(function(pair){
-          var b = document.createElement('button');
-          b.textContent = pair[1];
-          if(g.categoria===pair[0]) b.className='on';
-          b.addEventListener('click', function(){ if(locked) return; g.categoria=pair[0]; touched(); render(); });
-          cat.appendChild(b);
-        });
-        row2.appendChild(cat);
-        var note = document.createElement('input');
-        note.className='gnote'; note.value = g.note || ''; note.placeholder = 'Allergie o intolleranze (se presenti)'; note.maxLength = 200;
-        note.addEventListener('input', function(){ g.note = note.value; touched(); renderTotali(); });
-        row2.appendChild(note);
-        row.appendChild(row2);
-        card.appendChild(row);
-      });
-
-      if(!locked){
-        var add = document.createElement('button');
-        add.className='addguest'; add.textContent = '+ Aggiungi persona';
-        add.addEventListener('click', function(){ t.guests.push(newGuest()); touched(); render();
-          var inputs = card.querySelectorAll('input.gname');
-          var last = inputs[inputs.length-1]; if(last) last.focus();
-        });
-        card.appendChild(add);
-      }
-      root.appendChild(card);
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"]/g, function(ch){
+      return ch==='&'?'&amp;':ch==='<'?'&lt;':ch==='>'?'&gt;':'&quot;';
     });
+  }
 
-    el('addTable').classList.toggle('hidden', locked);
-    el('footer').classList.toggle('hidden', locked);
-    el('bannerLocked').classList.toggle('hidden', !locked);
-    el('bannerIntro').classList.toggle('hidden', locked || Boolean(meta.submittedAt));
-    var sent = el('bannerSent');
-    if(meta.submittedAt){
-      var d = new Date(meta.submittedAt);
-      sent.innerHTML = '✅ Lista inviata al ristorante il <b>' + d.toLocaleDateString('it-IT') + '</b> alle <b>' + d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}) + '</b>.' + (locked ? '' : ' Puoi ancora correggerla: dopo le modifiche premi di nuovo <b>Invia aggiornamenti</b>.');
-      sent.classList.remove('hidden');
+  function daysTo(ymd){
+    var p = ymd.split('-');
+    var target = new Date(Number(p[0]), Number(p[1])-1, Number(p[2]));
+    var now = new Date();
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return Math.round((target - today) / 86400000);
+  }
+
+  function renderCountdown(days){
+    var c = el('countCard');
+    if(days > 1){
+      c.innerHTML = '<div class="count-num">' + days + '</div><div class="count-label">giorni all’evento</div>';
+    } else if(days === 1){
+      c.innerHTML = '<div class="count-today">È domani!</div><div class="count-label">ci vediamo domani ✨</div>';
+    } else if(days === 0){
+      c.innerHTML = '<div class="count-today">È oggi 🎉</div><div class="count-label">vi aspettiamo!</div>';
     } else {
-      sent.classList.add('hidden');
+      c.innerHTML = '<div class="count-today">Evento concluso</div><div class="count-label">grazie per aver festeggiato con noi ✨</div>';
     }
-    el('submitBtn').textContent = meta.submittedAt ? 'Invia aggiornamenti' : 'Invia al ristorante';
-    renderTotali();
   }
 
-  function setSaveState(txt){ el('saveState').textContent = txt; }
-
-  function touched(){
-    setSaveState('Salvataggio…');
-    if(saveTimer) clearTimeout(saveTimer);
-    saveTimer = setTimeout(function(){
-      api('save', { draft: state }).then(function(r){
-        setSaveState(r.ok ? 'Bozza salvata ✓' : 'Salvataggio non riuscito (riprovo alla prossima modifica)');
-      }).catch(function(){ setSaveState('Sei offline? La bozza verrà salvata alla prossima modifica.'); });
-    }, 1200);
+  function renderTracker(b, days){
+    var submitted = Boolean(b.submittedAt);
+    var locked = b.stato === 'bloccato';
+    var passed = days < 0;
+    var steps = [
+      { done: true, t1: 'Evento confermato',
+        t2: 'La data è riservata per voi.' },
+      { done: submitted, now: !submitted && !passed,
+        t1: 'Posti assegnati',
+        t2: submitted
+          ? 'Lista inviata il ' + new Date(b.submittedAt).toLocaleDateString('it-IT') + '.'
+          : 'Tocca il bottone qui sotto per compilare tavoli e ospiti.' },
+      { done: locked, now: submitted && !locked && !passed,
+        t1: 'Lista confermata dal ristorante',
+        t2: locked ? 'Tutto pronto: la sala sarà allestita come richiesto.'
+                   : 'La confermeremo noi a ridosso dell’evento.' },
+      { done: passed || days === 0, now: days === 1,
+        t1: 'Giorno dell’evento',
+        t2: passed ? 'Concluso — grazie!' : 'Vi aspettiamo!' }
+    ];
+    var html = '';
+    steps.forEach(function(s, i){
+      var cls = 'step' + (s.done ? ' done' : '') + (!s.done && s.now ? ' now' : '');
+      html += '<div class="' + cls + '"><div class="rail"><div class="dot">' + (s.done ? '✓' : '') + '</div>'
+        + (i < steps.length-1 ? '<div class="bar"></div>' : '') + '</div>'
+        + '<div class="txt"><div class="t1">' + s.t1 + '</div><div class="t2">' + s.t2 + '</div></div></div>';
+    });
+    el('trackerCard').innerHTML = html;
   }
 
-  el('addTable').addEventListener('click', function(){
-    state.tables.push(newTable()); touched(); render();
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-  });
-
-  el('submitBtn').addEventListener('click', function(){
-    var c = counts();
-    if(c.tot === 0){ window.alert('Aggiungi almeno un tavolo con le persone sedute prima di inviare.'); return; }
-    var det = [];
-    if(c.adulti) det.push(c.adulti + ' adulti');
-    if(c.ragazzi) det.push(c.ragazzi + ' ragazzi');
-    if(c.baby) det.push(c.baby + ' baby');
-    el('confirmTxt').textContent = 'Stai per inviare ' + c.tot + ' ospiti su ' + state.tables.length + ' tavoli (' + det.join(', ') + '). Potrai comunque correggere la lista finché il ristorante non la conferma.';
-    el('confirmDlg').showModal();
-  });
-  el('dlgNo').addEventListener('click', function(){ el('confirmDlg').close(); });
-  el('dlgYes').addEventListener('click', function(){
-    el('confirmDlg').close();
-    var btn = el('submitBtn');
-    btn.disabled = true; btn.textContent = 'Invio in corso…';
-    api('submit', { draft: state }).then(function(r){
-      btn.disabled = false;
+  el('reqBtn').addEventListener('click', function(){ el('reqDlg').showModal(); });
+  el('reqNo').addEventListener('click', function(){ el('reqDlg').close(); });
+  el('reqYes').addEventListener('click', function(){
+    var msg = el('reqText').value.trim();
+    if(msg.length < 5){ window.alert('Scrivi qualche parola in più, così capiamo la richiesta.'); return; }
+    var btn = el('reqYes');
+    btn.disabled = true; btn.textContent = 'Invio…';
+    api('richiesta', { message: msg }).then(function(r){
+      btn.disabled = false; btn.textContent = 'Invia richiesta';
       if(r.ok){
-        meta.submittedAt = r.body.submittedAt || new Date().toISOString();
-        render();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        el('reqDlg').close();
+        el('reqText').value = '';
+        window.alert('Richiesta inviata! Ti risponderemo su WhatsApp al più presto.');
       } else {
-        btn.textContent = meta.submittedAt ? 'Invia aggiornamenti' : 'Invia al ristorante';
         window.alert(r.body && r.body.error ? r.body.error : 'Invio non riuscito, riprova.');
-        if(r.status === 423){ meta.stato = 'bloccato'; render(); }
       }
     }).catch(function(){
-      btn.disabled = false;
-      btn.textContent = meta.submittedAt ? 'Invia aggiornamenti' : 'Invia al ristorante';
+      btn.disabled = false; btn.textContent = 'Invia richiesta';
       window.alert('Connessione assente: riprova quando sei online.');
     });
   });
@@ -324,17 +224,37 @@
       return;
     }
     var b = r.body;
-    el('evTitle').textContent = b.evento.title;
-    el('evDate').textContent = b.evento.dateLabel;
-    meta.menuTipologie = Boolean(b.menuTipologie);
-    meta.stato = b.stato;
-    meta.submittedAt = b.submittedAt;
-    var draft = b.draft && Array.isArray(b.draft.tables) ? b.draft : { tables: [] };
-    state.tables = draft.tables;
-    if(state.tables.length === 0 && b.stato === 'attivo') state.tables.push(newTable());
+    var ev = b.evento;
+    el('evTitle').textContent = ev.title;
+    el('evDate').textContent = ev.dateLabel + ' · ' + (ev.meal === 'lunch' ? 'Pranzo' : 'Cena');
+
+    var days = daysTo(ev.dateYmd);
+    renderCountdown(days);
+    renderTracker(b, days);
+
+    if(ev.tema){ el('temaBody').textContent = ev.tema; el('temaCard').classList.remove('hidden'); }
+    if(ev.allestimento){ el('alleBody').textContent = ev.allestimento; el('alleCard').classList.remove('hidden'); }
+
+    var tot = (ev.adulti||0) + (ev.ragazzi||0) + (ev.baby||0);
+    if(tot > 0){
+      var det = [];
+      if(ev.adulti) det.push(ev.adulti + ' adulti');
+      if(ev.ragazzi) det.push(ev.ragazzi + ' ragazzi');
+      if(ev.baby) det.push(ev.baby + ' baby');
+      el('ospitiBody').innerHTML = '<div class="ospiti-num">' + tot + '</div><div class="ospiti-det">' + esc(det.join(' · ')) + '</div>';
+    } else {
+      el('ospitiBody').innerHTML = '<div class="ospiti-det" style="margin-top:2px">In definizione — compila i posti assegnati e il conteggio apparirà qui.</div>';
+    }
+
+    var submitted = Boolean(b.submittedAt);
+    var locked = b.stato === 'bloccato';
+    el('postiBtnTxt').textContent = locked
+      ? 'Vedi i posti assegnati'
+      : submitted ? 'Vedi o modifica i posti assegnati' : 'Compila i posti assegnati';
+    el('postiBtn').href = 'posti.html?c=' + encodeURIComponent(TOKEN);
+
     el('loading').classList.add('hidden');
     el('app').classList.remove('hidden');
-    render();
   }).catch(function(){
     el('loading').textContent = 'Impossibile caricare la pagina: controlla la connessione e ricarica.';
   });
