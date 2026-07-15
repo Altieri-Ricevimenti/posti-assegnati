@@ -112,11 +112,11 @@
 </div>
 <dialog id="reqDlg">
   <h2>Richiedi una modifica</h2>
-  <p>Scrivici cosa vorresti cambiare o aggiungere: la richiesta arriva subito al ristorante e ti risponderemo su WhatsApp.</p>
+  <p>Scrivi cosa vorresti cambiare o aggiungere: si aprirà WhatsApp con il messaggio già pronto per il ristorante, ti basterà premere invia.</p>
   <textarea id="reqText" maxlength="600" placeholder="Es. Vorremmo aggiungere il tavolo dei colleghi, 6 persone…"></textarea>
   <div class="dlg-row">
     <button id="reqNo">Annulla</button>
-    <button id="reqYes" class="primary">Invia richiesta</button>
+    <button id="reqYes" class="primary">Apri WhatsApp</button>
   </div>
 </dialog>
 <script>
@@ -196,26 +196,18 @@
     el('trackerCard').innerHTML = html;
   }
 
+  // Richiesta modifica: apre WhatsApp Business del ristorante col messaggio
+  // gia' composto (il cliente lo invia dalla sua chat).
+  var WHATSAPP = '393393577977';
+  var eventoRef = '';
   el('reqBtn').addEventListener('click', function(){ el('reqDlg').showModal(); });
   el('reqNo').addEventListener('click', function(){ el('reqDlg').close(); });
   el('reqYes').addEventListener('click', function(){
     var msg = el('reqText').value.trim();
     if(msg.length < 5){ window.alert('Scrivi qualche parola in più, così capiamo la richiesta.'); return; }
-    var btn = el('reqYes');
-    btn.disabled = true; btn.textContent = 'Invio…';
-    api('richiesta', { message: msg }).then(function(r){
-      btn.disabled = false; btn.textContent = 'Invia richiesta';
-      if(r.ok){
-        el('reqDlg').close();
-        el('reqText').value = '';
-        window.alert('Richiesta inviata! Ti risponderemo su WhatsApp al più presto.');
-      } else {
-        window.alert(r.body && r.body.error ? r.body.error : 'Invio non riuscito, riprova.');
-      }
-    }).catch(function(){
-      btn.disabled = false; btn.textContent = 'Invia richiesta';
-      window.alert('Connessione assente: riprova quando sei online.');
-    });
+    var full = 'Richiesta modifica per ' + eventoRef + ':\n' + msg;
+    el('reqDlg').close();
+    window.open('https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(full), '_blank');
   });
 
   api('load').then(function(r){
@@ -225,6 +217,7 @@
     }
     var b = r.body;
     var ev = b.evento;
+    eventoRef = '"' + ev.title + '" del ' + ev.dateLabel;
     el('evTitle').textContent = ev.title;
     el('evDate').textContent = ev.dateLabel + ' · ' + (ev.meal === 'lunch' ? 'Pranzo' : 'Cena');
 

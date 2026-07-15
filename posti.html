@@ -87,7 +87,7 @@
       <div class="date" id="evDate"></div>
       <div class="headrule"></div>
     </header>
-    <div id="bannerLocked" class="banner locked hidden">🔒 La lista è stata confermata dal ristorante e non è più modificabile. Per variazioni scrivici su WhatsApp.</div>
+    <div id="bannerLocked" class="banner locked hidden">🔒 La lista è stata confermata dal ristorante e non è più modificabile. Per variazioni <a id="waLink" href="#" target="_blank" style="color:inherit;font-weight:700">scrivici su WhatsApp</a>.</div>
     <div id="bannerSent" class="banner ok hidden"></div>
     <div id="bannerIntro" class="banner info">Crea i tavoli e scrivi chi siede in ognuno. Se qualcuno ha allergie o intolleranze, indicale accanto al nome. Puoi salvare e riprendere quando vuoi: alla fine premi <b>Invia al ristorante</b>.</div>
     <div id="tables"></div>
@@ -331,6 +331,9 @@
     var b = r.body;
     el('evTitle').textContent = b.evento.title;
     el('evDate').textContent = b.evento.dateLabel;
+    el('waLink').href = 'https://wa.me/393393577977?text=' + encodeURIComponent(
+      'Richiesta modifica per "' + b.evento.title + '" del ' + b.evento.dateLabel + ':\n'
+    );
     meta.menuTipologie = Boolean(b.menuTipologie);
     meta.stato = b.stato;
     meta.submittedAt = b.submittedAt;
