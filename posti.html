@@ -39,6 +39,13 @@
   .table-head input:focus{border-bottom-color:var(--ink)}
   .menu-seg{display:flex;gap:6px;margin:6px 0 10px;flex-wrap:wrap;align-items:center}
   .menu-seg span{font-size:12px;color:var(--muted);align-self:center;margin-right:2px}
+  /* Tendina "chi siede al tavolo": piu' familiare dei bottoni per chi ha poca
+     dimestichezza (su telefono apre il selettore nativo). */
+  .tfield{margin:10px 0}
+  .tlabel{display:block;font-size:12px;font-weight:600;color:var(--ink-2);margin:0 0 4px 2px}
+  select.tsel{width:100%;border:1.5px solid var(--line);border-radius:11px;background-color:#fff;font-size:16px;padding:12px 36px 12px 12px;color:var(--ink);outline:none;font-family:inherit;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a8175' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:13px}
+  select.tsel:focus{border-color:var(--ink)}
+  select.tsel:disabled{opacity:.75}
   .menu-seg button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:13px;color:var(--muted);font-weight:600}
   .menu-seg button.on{background:var(--ink);border-color:var(--ink);color:#fff}
   .guest{border:1px solid var(--line-light);border-radius:14px;padding:12px;margin-top:10px;background:#fcfbf9}
@@ -134,7 +141,7 @@
   var API = 'https://qjigyokmnpuwtdrjuwqb.supabase.co/functions/v1/posti-assegnati';
   var TOKEN = new URLSearchParams(window.location.search).get('c') || '';
   var state = { tables: [] };
-  var meta = { menuTipologie: false, tavoloImperiale: false, stato: 'attivo', submittedAt: null };
+  var meta = { tavoloImperiale: false, stato: 'attivo', submittedAt: null };
   var saveTimer = null;
   // Regole del ristorante: tavoli da 7 a 10 persone; tavolo imperiale fino a 60.
   var MIN_TAVOLO = 7, MAX_TAVOLO = 10, MAX_IMPERIALE = 60;
@@ -163,7 +170,7 @@
   function newGuest(){ return { name: '', categoria: 'adulto', note: '' }; }
   function newTable(){
     var n = state.tables.length + 1;
-    return { label: 'Tavolo ' + n, menu: null, cat: null, imperiale: false, onore: false, guests: [newGuest()] };
+    return { label: 'Tavolo ' + n, cat: 'adulto', imperiale: false, onore: false, guests: [newGuest()] };
   }
   function maxPosti(t){ return t.imperiale ? MAX_IMPERIALE : MAX_TAVOLO; }
   // Tavolo sposi/festeggiati: bottone dedicato o nome che lo dice gia' da solo
@@ -219,7 +226,6 @@
       if(/spos|festeggiat/i.test(t.label||'') || t.onore) badges.push('💍 Sposi/festeggiati');
       if(t.cat) badges.push(t.cat==='adulto'?'Adulti':t.cat==='ragazzo'?'Ragazzi':'Baby');
       else badges.push('Misto');
-      if(meta.menuTipologie && t.menu) badges.push('Menu ' + t.menu);
       html += '<div class="sum-badges">' + badges.map(function(b){ return '<span class="sum-badge">'+esc(b)+'</span>'; }).join('') + '</div>';
       guests.forEach(function(g){
         var cat = t.cat || g.categoria;
@@ -278,41 +284,38 @@
       }
       card.appendChild(head);
 
-      // Tipologia dell'intero tavolo: se scelta vale per tutti i seduti,
-      // "Misto" = si indica persona per persona.
-      var tipoSeg = document.createElement('div');
-      tipoSeg.className = 'menu-seg';
-      var tipoLbl = document.createElement('span'); tipoLbl.textContent = 'Tavolo di:';
-      tipoSeg.appendChild(tipoLbl);
-      [[null,'Misto'],['adulto','Adulti'],['ragazzo','Ragazzi'],['baby','Baby']].forEach(function(pair){
-        var btn = document.createElement('button');
-        btn.textContent = pair[1];
-        if(t.cat===pair[0] || (!t.cat && pair[0]===null)) btn.className='on';
-        btn.addEventListener('click', function(){
-          if(locked) return;
-          t.cat = pair[0]; touched(); render();
-        });
-        tipoSeg.appendChild(btn);
+      // Chi siede al tavolo: tendina invece di una fila di bottoni.
+      // "Misto" fa comparire la scelta singola per ogni persona.
+      var catField = document.createElement('div');
+      catField.className = 'tfield';
+      var catLabel = document.createElement('label');
+      catLabel.className = 'tlabel';
+      catLabel.textContent = 'Chi siede a questo tavolo?';
+      var catId = 't' + ti + 'cat';
+      catLabel.setAttribute('for', catId);
+      var catSel = document.createElement('select');
+      catSel.className = 'tsel';
+      catSel.id = catId;
+      catSel.disabled = locked;
+      [['adulto','Tutti adulti'], ['ragazzo','Tutti ragazzi'], ['baby','Tutti baby'],
+       ['','Misto (lo indico persona per persona)']].forEach(function(pair){
+        var o = document.createElement('option');
+        o.value = pair[0];
+        o.textContent = pair[1];
+        if((t.cat || '') === pair[0]) o.selected = true;
+        catSel.appendChild(o);
       });
-      card.appendChild(tipoSeg);
+      catSel.addEventListener('change', function(){
+        t.cat = catSel.value || null;
+        touched(); render();
+      });
+      catField.appendChild(catLabel);
+      catField.appendChild(catSel);
+      card.appendChild(catField);
 
       {
         var seg = document.createElement('div');
         seg.className = 'menu-seg';
-        if(meta.menuTipologie){
-          var segLbl = document.createElement('span'); segLbl.textContent = 'Menu:';
-          seg.appendChild(segLbl);
-          ['adulti','ragazzi'].forEach(function(m){
-            var btn = document.createElement('button');
-            btn.textContent = m==='adulti' ? 'Menu adulti' : 'Menu ragazzi';
-            if(t.menu===m) btn.className='on';
-            btn.addEventListener('click', function(){
-              if(locked) return;
-              t.menu = (t.menu===m) ? null : m; touched(); render();
-            });
-            seg.appendChild(btn);
-          });
-        }
         if(meta.tavoloImperiale){
           var impBtn = document.createElement('button');
           impBtn.textContent = '👑 Imperiale';
@@ -507,7 +510,6 @@
     el('waLink').href = 'https://wa.me/393393577977?text=' + encodeURIComponent(
       'Richiesta modifica per "' + b.evento.title + '" del ' + b.evento.dateLabel + ':\n'
     );
-    meta.menuTipologie = Boolean(b.menuTipologie);
     meta.tavoloImperiale = Boolean(b.tavoloImperiale);
     meta.stato = b.stato;
     meta.submittedAt = b.submittedAt;
