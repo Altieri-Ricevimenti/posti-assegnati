@@ -131,6 +131,10 @@
 <dialog id="confirmDlg">
   <h2>Inviare la lista?</h2>
   <p id="confirmTxt"></p>
+  <div class="tfield">
+    <label class="tlabel" for="onoreSel">Qual è il tavolo degli sposi / del festeggiato?</label>
+    <select id="onoreSel" class="tsel"></select>
+  </div>
   <div class="dlg-row">
     <button id="dlgNo">Ricontrollo</button>
     <button id="dlgYes" class="primary">Invia</button>
@@ -173,8 +177,6 @@
     return { label: 'Tavolo ' + n, cat: 'adulto', imperiale: false, onore: false, guests: [newGuest()] };
   }
   function maxPosti(t){ return t.imperiale ? MAX_IMPERIALE : MAX_TAVOLO; }
-  // Tavolo sposi/festeggiati: bottone dedicato o nome che lo dice gia' da solo
-  function isOnore(t){ return Boolean(t.onore) || /spos|festeggiat/i.test(t.label||''); }
   function catEffettiva(t, g){ return t.cat || g.categoria; }
   function validGuests(t){
     return t.guests.filter(function(g){ return g.name && g.name.trim().length >= 2; });
@@ -223,7 +225,7 @@
       html += '<div class="sum-title">' + esc(t.label || 'Tavolo') + '</div>';
       var badges = [];
       if(t.imperiale) badges.push('👑 Imperiale');
-      if(/spos|festeggiat/i.test(t.label||'') || t.onore) badges.push('💍 Sposi/festeggiati');
+      if(t.onore) badges.push('💍 Sposi/festeggiati');
       if(t.cat) badges.push(t.cat==='adulto'?'Adulti':t.cat==='ragazzo'?'Ragazzi':'Baby');
       else badges.push('Misto');
       html += '<div class="sum-badges">' + badges.map(function(b){ return '<span class="sum-badge">'+esc(b)+'</span>'; }).join('') + '</div>';
@@ -326,14 +328,8 @@
           });
           seg.appendChild(impBtn);
         }
-        var onoreBtn = document.createElement('button');
-        onoreBtn.textContent = '💍 Sposi/festeggiati';
-        if(t.onore) onoreBtn.className='on';
-        onoreBtn.addEventListener('click', function(){
-          if(locked) return;
-          t.onore = !t.onore; touched(); render();
-        });
-        seg.appendChild(onoreBtn);
+        // Il tavolo sposi/festeggiati non si marca piu' qui: si sceglie una volta
+        // sola al momento dell'invio.
         card.appendChild(seg);
       }
 
@@ -452,16 +448,13 @@
   el('submitBtn').addEventListener('click', function(){
     var c = counts();
     if(c.tot === 0){ window.alert('Aggiungi almeno un tavolo con le persone sedute prima di inviare.'); return; }
-    // Regole sui posti: 7-10 per tavolo, imperiale fino a 60
+    // Il minimo di 7 non blocca piu' l'invio: resta solo come indicazione scritta.
+    // Il massimo invece e' un vincolo fisico del tavolo, quindi resta.
     for(var i=0;i<state.tables.length;i++){
       var t = state.tables[i];
       var n = validGuests(t).length;
       var lbl = (t.label||'').trim() || ('Tavolo ' + (i+1));
       if(n === 0){ window.alert('Il tavolo "' + lbl + '" è vuoto: aggiungi le persone o eliminalo.'); return; }
-      if(n < MIN_TAVOLO && !isOnore(t)){
-        window.alert('Il tavolo "' + lbl + '" ha solo ' + n + (n===1?' persona':' persone') + ': i tavoli devono avere almeno ' + MIN_TAVOLO + ' posti (solo il tavolo 💍 sposi/festeggiati può essere più piccolo). Unisci gli ospiti a un altro tavolo, oppure scrivici su WhatsApp per esigenze particolari.');
-        return;
-      }
       if(n > maxPosti(t)){
         window.alert(t.imperiale
           ? 'Il tavolo imperiale "' + lbl + '" ha ' + n + ' persone: il massimo è ' + MAX_IMPERIALE + '.'
@@ -474,10 +467,35 @@
     if(c.ragazzi) det.push(c.ragazzi + ' ragazzi');
     if(c.baby) det.push(c.baby + ' baby');
     el('confirmTxt').textContent = 'Stai per inviare ' + c.tot + ' ospiti su ' + state.tables.length + ' tavoli (' + det.join(', ') + '). Potrai comunque correggere la lista finché il ristorante non la conferma.';
+
+    // Tavolo degli sposi/festeggiati: si sceglie qui, una volta sola.
+    var os = el('onoreSel');
+    os.innerHTML = '';
+    var ph = document.createElement('option');
+    ph.value = ''; ph.textContent = 'Scegli il tavolo…';
+    os.appendChild(ph);
+    state.tables.forEach(function(t, idx){
+      if(validGuests(t).length === 0) return;
+      var o = document.createElement('option');
+      o.value = String(idx);
+      o.textContent = (t.label||'').trim() || ('Tavolo ' + (idx+1));
+      if(t.onore) o.selected = true;
+      os.appendChild(o);
+    });
+    var none = document.createElement('option');
+    none.value = 'nessuno'; none.textContent = 'Non c\'è un tavolo sposi/festeggiati';
+    os.appendChild(none);
     el('confirmDlg').showModal();
   });
   el('dlgNo').addEventListener('click', function(){ el('confirmDlg').close(); });
   el('dlgYes').addEventListener('click', function(){
+    var scelta = el('onoreSel').value;
+    if(scelta === ''){
+      window.alert('Scegli qual è il tavolo degli sposi / del festeggiato prima di inviare. Se non c\'è, seleziona "Non c\'è un tavolo sposi/festeggiati".');
+      return;
+    }
+    // Un solo tavolo puo' essere quello degli sposi
+    state.tables.forEach(function(t, idx){ t.onore = (scelta !== 'nessuno' && String(idx) === scelta); });
     el('confirmDlg').close();
     var btn = el('submitBtn');
     btn.disabled = true; btn.textContent = 'Invio in corso…';
@@ -513,7 +531,7 @@
     meta.tavoloImperiale = Boolean(b.tavoloImperiale);
     meta.stato = b.stato;
     meta.submittedAt = b.submittedAt;
-    el('bannerIntro').innerHTML += ' Ogni tavolo può ospitare <b>da ' + MIN_TAVOLO + ' a ' + MAX_TAVOLO + ' persone</b>' + (meta.tavoloImperiale ? '; il tavolo 👑 imperiale non ha questo limite' : '') + '; il tavolo 💍 sposi/festeggiati può essere anche più piccolo.';
+    el('bannerIntro').innerHTML += ' Di norma ogni tavolo ospita <b>da ' + MIN_TAVOLO + ' a ' + MAX_TAVOLO + ' persone</b>' + (meta.tavoloImperiale ? '; il tavolo 👑 imperiale non ha questo limite' : '') + '. Alla fine ti chiederemo qual è il tavolo degli sposi / del festeggiato.';
     var draft = b.draft && Array.isArray(b.draft.tables) ? b.draft : { tables: [] };
     state.tables = draft.tables;
     if(state.tables.length === 0 && b.stato === 'attivo') state.tables.push(newTable());
