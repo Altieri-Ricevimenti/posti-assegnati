@@ -41,16 +41,24 @@
   .menu-seg span{font-size:12px;color:var(--muted);align-self:center;margin-right:2px}
   .menu-seg button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:13px;color:var(--muted);font-weight:600}
   .menu-seg button.on{background:var(--ink);border-color:var(--ink);color:#fff}
-  .guest{display:grid;grid-template-columns:1fr auto;gap:6px;padding:10px 0;border-top:1px solid var(--line-light)}
-  .guest input.gname{grid-column:1;border:none;background:transparent;font-size:16px;padding:4px 6px;outline:none;color:var(--ink);min-width:0}
-  .guest .gdel{grid-column:2;border:none;background:none;color:#BDBDBD;font-size:20px;padding:0 6px}
-  .grow2{grid-column:1 / span 2;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-  .cat-seg{display:flex;gap:4px}
-  .cat-seg button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 11px;font-size:12px;color:var(--muted);font-weight:600}
+  .guest{border:1px solid var(--line-light);border-radius:14px;padding:12px;margin-top:10px;background:#fcfbf9}
+  .ghead{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .gnum{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .gdel{border:none;background:none;color:var(--danger);font-size:13px;font-weight:600;padding:2px 4px}
+  .gfield{margin-top:8px}
+  .gfield:first-of-type{margin-top:0}
+  .glabel{display:block;font-size:12px;font-weight:600;color:var(--ink-2);margin:0 0 4px 2px}
+  .glabel .opt{color:var(--muted);font-weight:500}
+  input.gname{width:100%;border:1.5px solid var(--line);border-radius:11px;background:#fff;font-size:16px;padding:11px 12px;outline:none;color:var(--ink)}
+  input.gname:focus{border-color:var(--ink)}
+  .cat-seg{display:flex;gap:6px;flex-wrap:wrap}
+  .cat-seg button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 15px;font-size:13px;color:var(--muted);font-weight:600}
   .cat-seg button.on{background:var(--ink);border-color:var(--ink);color:#fff}
-  input.gnote{flex:1;border:1px solid var(--line-light);border-radius:999px;background:var(--surface);font-size:13px;padding:7px 12px;outline:none;color:var(--ink);min-width:140px}
-  input.gnote:focus{border-color:var(--ink);background:#fff}
-  .addguest{width:100%;margin-top:8px;border:1.5px dashed var(--line);background:none;border-radius:12px;padding:10px;font-size:14px;color:var(--ink);font-weight:600}
+  .gnotewrap{position:relative}
+  input.gnote{width:100%;border:1.5px solid #E7D9BE;border-radius:11px;background:#FBF6EC;font-size:14px;padding:11px 12px;outline:none;color:var(--ink)}
+  input.gnote:focus{border-color:var(--gold);background:#fff}
+  input.gnote::placeholder{color:#B89A5E}
+  .addguest{width:100%;margin-top:10px;border:1.5px dashed var(--line);background:none;border-radius:12px;padding:12px;font-size:14px;color:var(--ink);font-weight:600}
   .deltable{border:none;background:none;color:var(--danger);font-size:13px;font-weight:600;padding:6px}
   .addtable{width:100%;border:1.5px dashed var(--line);background:none;border-radius:18px;padding:16px;font-size:16px;color:var(--ink);font-weight:700;margin:6px 0}
   .totali{background:var(--surface);border-radius:14px;padding:13px 15px;font-size:14px;color:var(--ink-2);margin:16px 0;line-height:1.55}
@@ -264,20 +272,36 @@
       t.guests.forEach(function(g, gi){
         var row = document.createElement('div');
         row.className = 'guest';
-        var name = document.createElement('input');
-        name.className='gname'; name.value = g.name; name.placeholder = 'Nome e cognome'; name.maxLength = 120;
-        name.addEventListener('input', function(){ g.name = name.value; touched(); renderTotali(); });
-        row.appendChild(name);
+
+        // Intestazione: "Ospite N" + elimina
+        var head = document.createElement('div');
+        head.className = 'ghead';
+        var num = document.createElement('span');
+        num.className = 'gnum'; num.textContent = 'Ospite ' + (gi+1);
+        head.appendChild(num);
         if(!locked){
           var del = document.createElement('button');
-          del.className='gdel'; del.innerHTML='&times;';
+          del.className='gdel'; del.textContent = 'Elimina';
           del.addEventListener('click', function(){ t.guests.splice(gi,1); touched(); render(); });
-          row.appendChild(del);
+          head.appendChild(del);
         }
-        var row2 = document.createElement('div');
-        row2.className = 'grow2';
+        row.appendChild(head);
+
+        // Campo 1: nome e cognome (etichettato)
+        var f1 = document.createElement('div'); f1.className = 'gfield';
+        var l1 = document.createElement('label'); l1.className = 'glabel'; l1.textContent = 'Nome e cognome';
+        var name = document.createElement('input');
+        name.className='gname'; name.value = g.name; name.placeholder = 'Es. Mario Rossi'; name.maxLength = 120;
+        name.setAttribute('autocapitalize','words');
+        var nameId = 't'+ti+'g'+gi+'name'; name.id = nameId; l1.setAttribute('for', nameId);
+        name.addEventListener('input', function(){ g.name = name.value; touched(); renderTotali(); });
+        f1.appendChild(l1); f1.appendChild(name);
+        row.appendChild(f1);
+
+        // Campo 2: categoria (solo se tavolo misto)
         if(!t.cat){
-          // Tavolo misto: categoria scelta persona per persona
+          var f2 = document.createElement('div'); f2.className = 'gfield';
+          var l2 = document.createElement('label'); l2.className = 'glabel'; l2.textContent = 'Tipo di ospite';
           var cat = document.createElement('div'); cat.className='cat-seg';
           [['adulto','Adulto'],['ragazzo','Ragazzo'],['baby','Baby']].forEach(function(pair){
             var b = document.createElement('button');
@@ -286,13 +310,21 @@
             b.addEventListener('click', function(){ if(locked) return; g.categoria=pair[0]; touched(); render(); });
             cat.appendChild(b);
           });
-          row2.appendChild(cat);
+          f2.appendChild(l2); f2.appendChild(cat);
+          row.appendChild(f2);
         }
+
+        // Campo 3: allergie / intolleranze (facoltativo, riquadro ambra distinto)
+        var f3 = document.createElement('div'); f3.className = 'gfield';
+        var l3 = document.createElement('label'); l3.className = 'glabel';
+        l3.innerHTML = 'Allergie o intolleranze <span class="opt">— solo se presenti, altrimenti lascia vuoto</span>';
         var note = document.createElement('input');
-        note.className='gnote'; note.value = g.note || ''; note.placeholder = 'Allergie o intolleranze (se presenti)'; note.maxLength = 200;
+        note.className='gnote'; note.value = g.note || ''; note.placeholder = 'Es. celiaco, intollerante al lattosio…'; note.maxLength = 200;
+        var noteId = 't'+ti+'g'+gi+'note'; note.id = noteId; l3.setAttribute('for', noteId);
         note.addEventListener('input', function(){ g.note = note.value; touched(); renderTotali(); });
-        row2.appendChild(note);
-        row.appendChild(row2);
+        f3.appendChild(l3); f3.appendChild(note);
+        row.appendChild(f3);
+
         card.appendChild(row);
       });
 
