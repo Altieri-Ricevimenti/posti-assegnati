@@ -76,6 +76,18 @@
   .errcard p{color:var(--muted);line-height:1.55;margin:0;font-size:14px}
   .ro .guest input,.ro .table-head input,.ro input.gnote{pointer-events:none}
   .backlink{display:inline-block;font-size:14px;color:var(--muted);text-decoration:none;font-weight:600;padding:10px 4px 0}
+  /* Riepilogo a lista (modalita' confermata/bloccata) */
+  .summary{column-count:2;column-gap:16px;margin-top:6px}
+  @media (max-width:430px){ .summary{column-count:1} }
+  .sum-table{break-inside:avoid;-webkit-column-break-inside:avoid;page-break-inside:avoid;background:var(--card);border:1px solid var(--line-light);border-radius:16px;padding:14px 16px;margin:0 0 16px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+  .sum-title{font-family:'Proyale',Georgia,serif;font-size:19px;color:var(--ink);margin:0 0 3px}
+  .sum-badges{margin:0 0 8px}
+  .sum-badge{display:inline-block;font-size:11px;font-weight:700;color:var(--gold);background:#FBF6EC;border-radius:999px;padding:2px 9px;margin:0 4px 4px 0}
+  .sum-guest{font-size:15px;line-height:1.55;color:var(--ink-2);padding:3px 0;border-top:1px solid var(--line-light)}
+  .sum-guest:first-of-type{border-top:none}
+  .sum-note{color:var(--gold);font-size:13px}
+  .sum-cat{color:var(--muted);font-size:13px}
+  .sum-count{font-size:12px;color:var(--muted);font-weight:600;margin-top:8px}
   dialog{border:none;border-radius:20px;padding:22px;max-width:340px;width:88%;box-shadow:0 20px 60px rgba(0,0,0,.25)}
   dialog::backdrop{background:rgba(10,10,10,.45)}
   dialog h2{font-family:'Proyale',Georgia,serif;font-weight:400;margin:0 0 8px;font-size:19px}
@@ -186,11 +198,64 @@
     el('totali').innerHTML = parts.join('<br>');
   }
 
+  function esc(s){
+    return String(s==null?'':s).replace(/[&<>"]/g,function(ch){
+      return ch==='&'?'&amp;':ch==='<'?'&lt;':ch==='>'?'&gt;':'&quot;';
+    });
+  }
+
+  // Modalita' confermata/bloccata: riepilogo pulito a due colonne (solo lettura)
+  function renderSummary(){
+    var root = el('tables');
+    root.className = '';
+    var html = '<div class="summary">';
+    state.tables.forEach(function(t){
+      var guests = t.guests.filter(function(g){ return g.name && g.name.trim().length>=2; });
+      if(guests.length === 0) return;
+      html += '<div class="sum-table">';
+      html += '<div class="sum-title">' + esc(t.label || 'Tavolo') + '</div>';
+      var badges = [];
+      if(t.imperiale) badges.push('👑 Imperiale');
+      if(/spos|festeggiat/i.test(t.label||'') || t.onore) badges.push('💍 Sposi/festeggiati');
+      if(t.cat) badges.push(t.cat==='adulto'?'Adulti':t.cat==='ragazzo'?'Ragazzi':'Baby');
+      else badges.push('Misto');
+      if(meta.menuTipologie && t.menu) badges.push('Menu ' + t.menu);
+      html += '<div class="sum-badges">' + badges.map(function(b){ return '<span class="sum-badge">'+esc(b)+'</span>'; }).join('') + '</div>';
+      guests.forEach(function(g){
+        var cat = t.cat || g.categoria;
+        var catTxt = cat!=='adulto' ? ' <span class="sum-cat">· '+(cat==='ragazzo'?'ragazzo':'baby')+'</span>' : '';
+        var noteTxt = g.note && g.note.trim() ? ' <span class="sum-note">('+esc(g.note.trim())+')</span>' : '';
+        html += '<div class="sum-guest">' + esc(g.name.trim()) + catTxt + noteTxt + '</div>';
+      });
+      html += '<div class="sum-count">' + guests.length + (guests.length===1?' persona':' persone') + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    root.innerHTML = html;
+  }
+
   function render(){
     var locked = meta.stato !== 'attivo';
     var root = el('tables');
+
+    if(locked){
+      renderSummary();
+      el('addTable').classList.add('hidden');
+      el('footer').classList.add('hidden');
+      el('bannerLocked').classList.remove('hidden');
+      el('bannerIntro').classList.add('hidden');
+      var sentL = el('bannerSent');
+      if(meta.submittedAt){
+        var dl = new Date(meta.submittedAt);
+        sentL.innerHTML = '✅ Lista inviata al ristorante il <b>' + dl.toLocaleDateString('it-IT') + '</b> alle <b>' + dl.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}) + '</b>.';
+        sentL.classList.remove('hidden');
+      } else { sentL.classList.add('hidden'); }
+      renderTotali();
+      return;
+    }
+
     root.innerHTML = '';
-    root.className = locked ? 'ro' : '';
+    root.className = '';
     state.tables.forEach(function(t, ti){
       var card = document.createElement('div');
       card.className = 'table-card';
